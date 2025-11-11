@@ -17,8 +17,8 @@ from sklearn.preprocessing import StandardScaler as skStandardScaler
 
 
 def read_training_data(
-    fault_free_path: str = "/content/TEP_FaultFree_Training.RData",
-    faulty_path: str = "/content/TEP_Faulty_Training.RData",
+    fault_free_path: str = "/workspace/TEP_FaultFree_Training.RData",
+    faulty_path: str = "/workspace/TEP_Faulty_Training.RData",
 ):
     """
     Reads the Tennessee Eastman Process (TEP) training or testing data from RData files.
@@ -143,7 +143,7 @@ def sample_train_and_test(
             fr = []
             b = train_ts[train_ts["faultNumber"] == i]
             for x in range(test_run_start, test_run_end):
-                b_x = b[b["simulationRun"] == x].iloc[160:660]
+                b_x = b[b["simulationRun"] == x].iloc[135:660]
                 fr.append(b_x)
             frames_test.append(pd.concat(fr))
 
@@ -176,7 +176,7 @@ def scale_and_window(
             - y_win (np.ndarray): [num_windows]
     """
     y = X_df[y_col].values
-    X = X_df.iloc[:, 3:].values  # assume first 3 cols are meta (fault, run, time)
+    X = X_df.iloc[:, 3:].values  
 
     if use_gpu and GPU_AVAILABLE:
         X_scaled = scaler.transform(cp.asarray(X))
@@ -205,8 +205,8 @@ def load_sampled_data(
     stride: int = 5,
     type_model: str = "supervised",
     use_gpu: bool = True,
-    fault_free_path: str = "/workspace/Project_1_ser/TEP_FaultFree_Training.RData",
-    faulty_path: str = "/workspace/Project_1_ser/TEP_Faulty_Testing.RData",
+    fault_free_path: str = "/workspace/TEP_FaultFree_Training.RData",
+    faulty_path: str = "/workspace/TEP_Faulty_Testing.RData",
     train_end: int | None = None,
     test_start: int | None = None,
     test_end: int | None = None,
@@ -266,7 +266,7 @@ def load_sampled_data(
     else:
         scaler = skStandardScaler()
         scaler.fit(fault_free)
-        print(f"[INFO] Using CPU Scaler (scikit-learn), fit on fault-free samples: {fault_free.shape[0]} rows")
+   #     print(f"[INFO] Using CPU Scaler (scikit-learn), fit on fault-free samples: {fault_free.shape[0]} rows")
 
     print("[INFO] Scaling and windowing training data...")
     X_train, y_train = scale_and_window(
